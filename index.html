@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Malicious URL Detector</title>
+    <style>
+        body { font-family: Arial; max-width: 600px; margin: 50px auto; padding: 20px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; }
+        button { background: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer; }
+        #result { margin-top: 20px; padding: 15px; border-radius: 5px; }
+        .safe { background: #d4edda; color: #155724; }
+        .risky { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>URL Safety Checker</h1>
+    <input type="url" id="urlInput" placeholder="Enter URL to check" required>
+    <button onclick="checkURL()">Scan URL</button>
+    <div id="result"></div>
+
+    <script>
+        function checkURL() {
+            const url = document.getElementById('urlInput').value;
+            const resultDiv = document.getElementById('result');
+            let score = 0;
+            let reasons = [];
+
+            // Basic heuristics (not foolproof, for demo)
+            if (url.length > 50) { score += 1; reasons.push('Unusually long URL'); }
+            if (url.includes('ip') || url.match(/\d+\.\d+\.\d+\.\d+/)) { score += 2; reasons.push('Uses IP address'); }
+            if (url.includes('login') && !url.includes('google.com') && !url.includes('microsoft.com')) { score += 2; reasons.push('Suspicious login keyword'); }
+            if (url.includes('%') || url.includes('script')) { score += 3; reasons.push('Encoded or script-like'); }
+            if (!url.startsWith('http')) { score += 1; reasons.push('Missing protocol'); }
+
+            const status = score > 3 ? 'RISKY' : score > 1 ? 'SUSPICIOUS' : 'LIKELY SAFE';
+            resultDiv.className = score > 3 ? 'risky' : score > 1 ? 'risky' : 'safe';
+            resultDiv.innerHTML = `<strong>${status}</strong><br>Score: ${score}/10<br>Reasons: ${reasons.join(', ') || 'None'}.<br>Verify with VirusTotal for accuracy.`;
+        }
+    </script>
+</body>
+</html>
